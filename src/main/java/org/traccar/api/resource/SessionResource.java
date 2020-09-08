@@ -100,8 +100,14 @@ public class SessionResource extends BaseResource {
     @PermitAll
     @POST
     public User add(
-            @FormParam("email") String email, @FormParam("password") String password) throws SQLException {
-        User user = Context.getPermissionsManager().login(email, password);
+            @FormParam("email") String email, @FormParam("password") String password,
+            @FormParam("token") String token) throws SQLException {
+        User user;
+        if (token == null) {
+            user = Context.getPermissionsManager().login(email, password);
+        } else {
+            user = Context.getPermissionsManager().login(token);
+        }
         if (user != null) {
             request.getSession().setAttribute(USER_ID_KEY, user.getId());
             LogAction.login(user.getId());

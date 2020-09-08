@@ -22,7 +22,9 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.jetty.util.URIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.traccar.authorization.OidcProvider;
 import org.traccar.config.Config;
+import org.traccar.config.Keys;
 import org.traccar.database.AttributesManager;
 import org.traccar.database.BaseObjectManager;
 import org.traccar.database.CalendarManager;
@@ -105,6 +107,12 @@ public final class Context {
 
     public static LdapProvider getLdapProvider() {
         return ldapProvider;
+    }
+
+    private static OidcProvider oidcProvider;
+
+    public static OidcProvider getOidcProvider() {
+        return oidcProvider;
     }
 
     private static MailManager mailManager;
@@ -294,6 +302,10 @@ public final class Context {
 
         if (config.getBoolean("ldap.enable")) {
             ldapProvider = new LdapProvider(config);
+        }
+
+        if (config.getBoolean(Keys.OidcAuthEnable)) {
+            oidcProvider = new OidcProvider(config);
         }
 
         mailManager = new MailManager();

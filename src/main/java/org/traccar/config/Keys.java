@@ -423,6 +423,18 @@ public final class Keys {
     public static final ConfigKey WEB_REQUEST_LOG_RETAIN_DAYS = new ConfigKey(
             "web.requestLog.retainDays", Integer.class);
 
+    public static final ConfigKey OidcAuthEnable = new ConfigKey(
+            "oidc.enable", Boolean.class);
+
+    public static final ConfigKey OidcAuthAud = new ConfigKey(
+            "oidc.aud", String.class);
+
+    public static final ConfigKey OidcAuthIss = new ConfigKey(
+            "oidc.iss", String.class);
+
+    public static final ConfigKey OidcAuthValidationKeyLocation = new ConfigKey(
+            "oidc.validationKeyLocation", String.class);
+
     private Keys() {
     }
 

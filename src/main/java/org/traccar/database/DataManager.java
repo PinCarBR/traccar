@@ -39,6 +39,7 @@ import liquibase.resource.ResourceAccessor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.traccar.authorization.OidcProvider;
 import org.traccar.config.Config;
 import org.traccar.Context;
 import org.traccar.helper.DateUtil;
@@ -330,6 +331,31 @@ public class DataManager {
                 return user;
             }
         }
+        return null;
+    }
+
+    public User login(String token) throws SQLException {
+        OidcProvider oidcProvider = Context.getOidcProvider();
+        if (oidcProvider != null) {
+            String email = oidcProvider.validateToken(token);
+            if (email != null) {
+                User user = QueryBuilder.create(dataSource, getQuery("database.loginUser"))
+                        .setString("email", email.trim())
+                        .executeQuerySingle(User.class);
+                if (user != null) {
+                    if (user.getLogin() != null) {
+                        return user;
+                    }
+                } else {
+                    user = oidcProvider.getUser(email);
+                    Context.getUsersManager().addItem(user);
+                    return user;
+                }
+            } else {
+                return null;
+            }
+        }
+        LOGGER.warn("OIDC provider not defined");
         return null;
     }
 

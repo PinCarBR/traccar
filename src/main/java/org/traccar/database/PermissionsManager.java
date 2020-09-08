@@ -444,6 +444,15 @@ public class PermissionsManager {
         return null;
     }
 
+    public User login(String token) throws SQLException {
+        User user = dataManager.login(token);
+        if (user != null) {
+            checkUserEnabled(user.getId());
+            return getUser(user.getId());
+        }
+        return null;
+    }
+
     public Object lookupAttribute(long userId, String key, Object defaultValue) {
         Object preference;
         Object serverPreference = server.getAttributes().get(key);
