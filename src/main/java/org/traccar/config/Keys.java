@@ -432,8 +432,15 @@ public final class Keys {
     public static final ConfigKey OidcAuthIss = new ConfigKey(
             "oidc.iss", String.class);
 
-    public static final ConfigKey OidcAuthValidationKeyLocation = new ConfigKey(
-            "oidc.validationKeyLocation", String.class);
+    public static final ConfigKey OidcJwksUri = new ConfigKey(
+            "oidc.jwksUri", String.class);
+
+    /**
+     * JSON Web Key (JWK) set format. Used for jwt validation.
+     * If nothing is provided, format is according to rfc7517
+     */
+    public static final ConfigKey OidcJwksFormat = new ConfigKey(
+            "oidc.jwksStd", String.class);
 
     private Keys() {
     }

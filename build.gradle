@@ -80,6 +80,8 @@ dependencies {
     compile 'io.jsonwebtoken:jjwt-api:0.11.2'
     runtime 'io.jsonwebtoken:jjwt-impl:0.11.2',
             'io.jsonwebtoken:jjwt-jackson:0.11.2'
+    implementation 'com.auth0:jwks-rsa:0.13.0'
+
 }
 
 task copyDependencies(type: Copy) {

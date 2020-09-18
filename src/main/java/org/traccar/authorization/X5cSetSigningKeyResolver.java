@@ -21,14 +21,14 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-public class X509CertSigningKeyResolver extends SigningKeyResolverAdapter {
+public class X5cSetSigningKeyResolver extends SigningKeyResolverAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(X509CertSigningKeyResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(X5cSetSigningKeyResolver.class);
 
-    private String OidcAuthValidationKeyLocation;
+    private String OidcJwksUri;
 
-    public X509CertSigningKeyResolver(Config config) {
-        this.OidcAuthValidationKeyLocation = config.getString(Keys.OidcAuthValidationKeyLocation, null);
+    public X5cSetSigningKeyResolver(Config config) {
+        this.OidcJwksUri = config.getString(Keys.OidcJwksUri, null);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class X509CertSigningKeyResolver extends SigningKeyResolverAdapter {
 
         JsonObject jwks = Context
                 .getClient()
-                .target(OidcAuthValidationKeyLocation)
+                .target(OidcJwksUri)
                 .request()
                 .get(JsonObject.class);
 

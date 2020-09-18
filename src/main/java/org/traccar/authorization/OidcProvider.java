@@ -16,12 +16,19 @@ public class OidcProvider {
 
     private String OidcAuthIss;
     private String OidcAuthAud;
+    private String OidcJwksFormat;
     private SigningKeyResolver signingKeyResolver;
 
     public OidcProvider(Config config) {
         this.OidcAuthIss = config.getString(Keys.OidcAuthIss);
         this.OidcAuthAud = config.getString(Keys.OidcAuthAud);
-        this.signingKeyResolver = new X509CertSigningKeyResolver(config);
+        this.OidcJwksFormat = config.getString(Keys.OidcJwksFormat, "standard");
+        switch (OidcJwksFormat.toLowerCase()) {
+            case "x5cset":
+                this.signingKeyResolver = new X5cSetSigningKeyResolver(config);
+            default:
+                this.signingKeyResolver = new StdJwksSigningKeyResolver(config);
+        }
     }
 
     public String validateToken(String tokenString) {
