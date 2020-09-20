@@ -1,5 +1,6 @@
 package org.traccar.authorization;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolver;
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.traccar.config.Config;
 import org.traccar.config.Keys;
 import org.traccar.model.User;
+
+import java.util.Date;
 
 
 public class OidcProvider {
@@ -18,6 +21,8 @@ public class OidcProvider {
     private String OidcAuthAud;
     private String OidcJwksFormat;
     private SigningKeyResolver signingKeyResolver;
+    private int UsersDefaultDeviceLimit;
+    private int UsersDefaultExpirationDays;
 
     public OidcProvider(Config config) {
         this.OidcAuthIss = config.getString(Keys.OidcAuthIss);
@@ -29,9 +34,11 @@ public class OidcProvider {
             default:
                 this.signingKeyResolver = new StdJwksSigningKeyResolver(config);
         }
+        this.UsersDefaultDeviceLimit = config.getInteger(Keys.UsersDefaultDeviceLimit, -1);
+        this.UsersDefaultExpirationDays = config.getInteger(Keys.UsersDefaultExpirationDays);
     }
 
-    public String validateToken(String tokenString) {
+    public Claims validateToken(String tokenString) {
         try {
             return Jwts.parserBuilder()
                     .requireIssuer(OidcAuthIss)
@@ -39,20 +46,23 @@ public class OidcProvider {
                     .setSigningKeyResolver(signingKeyResolver)
                     .build()
                     .parseClaimsJws(tokenString)
-                    .getBody()
-                    .get("email", String.class);
+                    .getBody();
         } catch (JwtException ex) {
             LOGGER.warn("Invalid id token provided");
             return null;
         }
     }
 
-    public User getUser(String accountName) {
+    public User getUser(Claims claims) {
         User user = new User();
-        user.setLogin(accountName);
-        user.setName(accountName);
-        user.setEmail(accountName);
+        user.setLogin(claims.get("email", String.class));
+        user.setName(claims.get("name", String.class));
+        user.setEmail(claims.get("email", String.class));
         user.setAdministrator(false);
+        user.setDeviceLimit(UsersDefaultExpirationDays);
+        user.setExpirationTime(
+                new Date(System.currentTimeMillis() + (long) UsersDefaultExpirationDays * 24 * 3600 * 1000)
+        );
         return user;
     }
 }

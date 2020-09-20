@@ -442,6 +442,12 @@ public final class Keys {
     public static final ConfigKey OidcJwksFormat = new ConfigKey(
             "oidc.jwksStd", String.class);
 
+    public static final ConfigKey UsersDefaultDeviceLimit = new ConfigKey(
+            "users.defaultDeviceLimit", Integer.class);
+
+    public static final ConfigKey UsersDefaultExpirationDays = new ConfigKey(
+            "users.defaultExpirationDays", Integer.class);
+
     private Keys() {
     }
 

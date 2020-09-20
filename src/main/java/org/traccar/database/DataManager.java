@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import io.jsonwebtoken.Claims;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -337,7 +338,8 @@ public class DataManager {
     public User login(String token) throws SQLException {
         OidcProvider oidcProvider = Context.getOidcProvider();
         if (oidcProvider != null) {
-            String email = oidcProvider.validateToken(token);
+            Claims claims = oidcProvider.validateToken(token);
+            String email = claims.get("email", String.class);
             if (email != null) {
                 User user = QueryBuilder.create(dataSource, getQuery("database.loginUser"))
                         .setString("email", email.trim())
@@ -347,7 +349,7 @@ public class DataManager {
                         return user;
                     }
                 } else {
-                    user = oidcProvider.getUser(email);
+                    user = oidcProvider.getUser(claims);
                     Context.getUsersManager().addItem(user);
                     return user;
                 }
