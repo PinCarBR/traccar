@@ -59,7 +59,7 @@ public class OidcProvider {
         user.setName(claims.get("name", String.class));
         user.setEmail(claims.get("email", String.class));
         user.setAdministrator(false);
-        user.setDeviceLimit(UsersDefaultExpirationDays);
+        user.setDeviceLimit(UsersDefaultDeviceLimit);
         user.setExpirationTime(
                 new Date(System.currentTimeMillis() + (long) UsersDefaultExpirationDays * 24 * 3600 * 1000)
         );
