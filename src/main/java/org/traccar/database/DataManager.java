@@ -361,6 +361,12 @@ public class DataManager {
         return null;
     }
 
+    public User getUserByEmail(String email) throws SQLException {
+        return QueryBuilder.create(dataSource, getQuery("database.loginUser"))
+                .setString("email", email.trim())
+                .executeQuerySingle(User.class);
+    }
+
     public void updateDeviceStatus(Device device) throws SQLException {
         QueryBuilder.create(dataSource, getQuery(ACTION_UPDATE, Device.class, true))
                 .setObject(device)
