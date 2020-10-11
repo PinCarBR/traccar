@@ -304,7 +304,7 @@ public final class Context {
             ldapProvider = new LdapProvider(config);
         }
 
-        if (config.getBoolean(Keys.OidcAuthEnable)) {
+        if (config.getBoolean(Keys.OIDCAUTHENABLE)) {
             oidcProvider = new OidcProvider(config);
         }
 

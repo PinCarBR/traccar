@@ -17,32 +17,32 @@ public class OidcProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OidcProvider.class);
 
-    private String OidcAuthIss;
-    private String OidcAuthAud;
-    private String OidcJwksFormat;
+    private String oidcAuthIss;
+    private String oidcAuthAud;
+    private String oidcJwksFormat;
     private SigningKeyResolver signingKeyResolver;
-    private int UsersDefaultDeviceLimit;
-    private int UsersDefaultExpirationDays;
+    private int usersDefaultDeviceLimit;
+    private int usersDefaultExpirationDays;
 
     public OidcProvider(Config config) {
-        this.OidcAuthIss = config.getString(Keys.OidcAuthIss);
-        this.OidcAuthAud = config.getString(Keys.OidcAuthAud);
-        this.OidcJwksFormat = config.getString(Keys.OidcJwksFormat, "standard");
-        switch (OidcJwksFormat.toLowerCase()) {
+        this.oidcAuthIss = config.getString(Keys.OIDCAUTHISS);
+        this.oidcAuthAud = config.getString(Keys.OIDCAUTHAUD);
+        this.oidcJwksFormat = config.getString(Keys.OIDCJWKSFORMAT, "standard");
+        switch (oidcJwksFormat.toLowerCase()) {
             case "x5cset":
                 this.signingKeyResolver = new X5cSetSigningKeyResolver(config);
             default:
                 this.signingKeyResolver = new StdJwksSigningKeyResolver(config);
         }
-        this.UsersDefaultDeviceLimit = config.getInteger(Keys.UsersDefaultDeviceLimit, -1);
-        this.UsersDefaultExpirationDays = config.getInteger(Keys.UsersDefaultExpirationDays);
+        this.usersDefaultDeviceLimit = config.getInteger(Keys.USERSDEFAULTDEVICELIMIT, -1);
+        this.usersDefaultExpirationDays = config.getInteger(Keys.USERSDEFAULTEXPIRATIONDAYS);
     }
 
     public Claims validateToken(String tokenString) {
         try {
             return Jwts.parserBuilder()
-                    .requireIssuer(OidcAuthIss)
-                    .requireAudience(OidcAuthAud)
+                    .requireIssuer(oidcAuthIss)
+                    .requireAudience(oidcAuthAud)
                     .setSigningKeyResolver(signingKeyResolver)
                     .build()
                     .parseClaimsJws(tokenString)
@@ -59,9 +59,9 @@ public class OidcProvider {
         user.setName(claims.get("name", String.class));
         user.setEmail(claims.get("email", String.class));
         user.setAdministrator(false);
-        user.setDeviceLimit(UsersDefaultDeviceLimit);
+        user.setDeviceLimit(usersDefaultDeviceLimit);
         user.setExpirationTime(
-                new Date(System.currentTimeMillis() + (long) UsersDefaultExpirationDays * 24 * 3600 * 1000)
+                new Date(System.currentTimeMillis() + (long) usersDefaultExpirationDays * 24 * 3600 * 1000)
         );
         return user;
     }
