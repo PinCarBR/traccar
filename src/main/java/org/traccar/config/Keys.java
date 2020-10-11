@@ -423,29 +423,29 @@ public final class Keys {
     public static final ConfigKey WEB_REQUEST_LOG_RETAIN_DAYS = new ConfigKey(
             "web.requestLog.retainDays", Integer.class);
 
-    public static final ConfigKey OidcAuthEnable = new ConfigKey(
+    public static final ConfigKey OIDCAUTHENABLE = new ConfigKey(
             "oidc.enable", Boolean.class);
 
-    public static final ConfigKey OidcAuthAud = new ConfigKey(
+    public static final ConfigKey OIDCAUTHAUD = new ConfigKey(
             "oidc.aud", String.class);
 
-    public static final ConfigKey OidcAuthIss = new ConfigKey(
+    public static final ConfigKey OIDCAUTHISS = new ConfigKey(
             "oidc.iss", String.class);
 
-    public static final ConfigKey OidcJwksUri = new ConfigKey(
+    public static final ConfigKey OIDCJWKSURI = new ConfigKey(
             "oidc.jwksUri", String.class);
 
     /**
      * JSON Web Key (JWK) set format. Used for jwt validation.
      * If nothing is provided, format is according to rfc7517
      */
-    public static final ConfigKey OidcJwksFormat = new ConfigKey(
+    public static final ConfigKey OIDCJWKSFORMAT = new ConfigKey(
             "oidc.jwksStd", String.class);
 
-    public static final ConfigKey UsersDefaultDeviceLimit = new ConfigKey(
+    public static final ConfigKey USERSDEFAULTDEVICELIMIT = new ConfigKey(
             "users.defaultDeviceLimit", Integer.class);
 
-    public static final ConfigKey UsersDefaultExpirationDays = new ConfigKey(
+    public static final ConfigKey USERSDEFAULTEXPIRATIONDAYS = new ConfigKey(
             "users.defaultExpirationDays", Integer.class);
 
     private Keys() {

@@ -20,10 +20,10 @@ public class StdJwksSigningKeyResolver extends SigningKeyResolverAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StdJwksSigningKeyResolver.class);
 
-    private String OidcJwksUri;
+    private String oidcJwksUri;
 
     public StdJwksSigningKeyResolver(Config config) {
-        this.OidcJwksUri = config.getString(Keys.OidcJwksUri, null);
+        this.oidcJwksUri = config.getString(Keys.OIDCJWKSURI, null);
     }
 
     @Override
@@ -39,11 +39,10 @@ public class StdJwksSigningKeyResolver extends SigningKeyResolverAdapter {
 
     private PublicKey getSigningKey(String kid) throws Exception {
 
-        JwkProvider provider = new JwkProviderBuilder(new URL(OidcJwksUri))
+        JwkProvider provider = new JwkProviderBuilder(new URL(oidcJwksUri))
                 .cached(10, 24, TimeUnit.HOURS)
                 .rateLimited(10, 1, TimeUnit.MINUTES)
                 .build();
-        ;
         Jwk jwk = provider.get(kid);
 
         return jwk.getPublicKey();

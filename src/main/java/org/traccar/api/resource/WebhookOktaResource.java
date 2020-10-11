@@ -21,11 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.traccar.Context;
 import org.traccar.api.BaseResource;
-import org.traccar.database.QueryBuilder;
 import org.traccar.helper.LogAction;
 import org.traccar.model.User;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
@@ -42,7 +46,7 @@ public class WebhookOktaResource extends BaseResource {
     public Response get(@HeaderParam("X-Okta-Verification-Challenge") String verificationChallenge) {
         if (verificationChallenge != null) {
             return Response.status(Response.Status.OK)
-                    .entity(String.format("{ \"verification\" : \"%s\" }",verificationChallenge))
+                    .entity(String.format("{ \"verification\" : \"%s\" }", verificationChallenge))
                     .build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST)

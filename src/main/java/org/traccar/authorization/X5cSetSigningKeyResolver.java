@@ -25,10 +25,10 @@ public class X5cSetSigningKeyResolver extends SigningKeyResolverAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(X5cSetSigningKeyResolver.class);
 
-    private String OidcJwksUri;
+    private String oidcJwksUri;
 
     public X5cSetSigningKeyResolver(Config config) {
-        this.OidcJwksUri = config.getString(Keys.OidcJwksUri, null);
+        this.oidcJwksUri = config.getString(Keys.OIDCJWKSURI, null);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class X5cSetSigningKeyResolver extends SigningKeyResolverAdapter {
 
         JsonObject jwks = Context
                 .getClient()
-                .target(OidcJwksUri)
+                .target(oidcJwksUri)
                 .request()
                 .get(JsonObject.class);
 
