@@ -81,7 +81,7 @@ public class DataManager {
 
     private boolean generateQueries;
 
-    private boolean forceLdap;
+    private final boolean forceLdap;
 
     public DataManager(Config config) throws Exception {
         this.config = config;

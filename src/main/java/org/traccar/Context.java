@@ -42,6 +42,7 @@ import org.traccar.database.MaintenancesManager;
 import org.traccar.database.MediaManager;
 import org.traccar.database.NotificationManager;
 import org.traccar.database.PermissionsManager;
+import org.traccar.schedule.ScheduleManager;
 import org.traccar.database.UsersManager;
 import org.traccar.geocoder.Geocoder;
 import org.traccar.helper.Log;
@@ -171,6 +172,12 @@ public final class Context {
 
     public static ServerManager getServerManager() {
         return serverManager;
+    }
+
+    private static ScheduleManager scheduleManager;
+
+    public static ScheduleManager getScheduleManager() {
+        return scheduleManager;
     }
 
     private static GeofenceManager geofenceManager;
@@ -344,6 +351,7 @@ public final class Context {
         }
 
         serverManager = new ServerManager();
+        scheduleManager = new ScheduleManager();
 
         if (config.getBoolean("event.forward.enable")) {
             eventForwarder = new JsonTypeEventForwarder();
