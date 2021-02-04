@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import io.jsonwebtoken.Claims;
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.traccar.authorization.OidcProvider;
 import org.traccar.config.Config;
 import org.traccar.Context;
-import org.traccar.config.Config;
 import org.traccar.config.Keys;
 import org.traccar.model.Attribute;
 import org.traccar.model.BaseModel;
@@ -63,18 +61,6 @@ import org.traccar.model.Position;
 import org.traccar.model.Server;
 import org.traccar.model.Statistics;
 import org.traccar.model.User;
-
-import javax.sql.DataSource;
-import java.beans.Introspector;
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class DataManager {
 
