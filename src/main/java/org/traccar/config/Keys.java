@@ -1147,30 +1147,38 @@ public final class Keys {
             "web.requestLog.retainDays",
             Collections.singletonList(KeyType.GLOBAL));
 
-    public static final ConfigKey OIDCAUTHENABLE = new ConfigKey(
-            "oidc.enable", Boolean.class);
+    public static final ConfigKey<Boolean> OIDCAUTHENABLE = new ConfigKey<>(
+            "oidc.enable",
+            Collections.singletonList(KeyType.GLOBAL));
 
-    public static final ConfigKey OIDCAUTHAUD = new ConfigKey(
-            "oidc.aud", String.class);
 
-    public static final ConfigKey OIDCAUTHISS = new ConfigKey(
-            "oidc.iss", String.class);
+    public static final ConfigKey<String> OIDCAUTHAUD = new ConfigKey<>(
+            "oidc.aud",
+            Collections.singletonList(KeyType.GLOBAL));
 
-    public static final ConfigKey OIDCJWKSURI = new ConfigKey(
-            "oidc.jwksUri", String.class);
+    public static final ConfigKey<String> OIDCAUTHISS = new ConfigKey<>(
+            "oidc.iss",
+            Collections.singletonList(KeyType.GLOBAL));
+
+    public static final ConfigKey<String> OIDCJWKSURI = new ConfigKey<>(
+            "oidc.jwksUri",
+            Collections.singletonList(KeyType.GLOBAL));
 
     /**
      * JSON Web Key (JWK) set format. Used for jwt validation.
      * If nothing is provided, format is according to rfc7517
      */
-    public static final ConfigKey OIDCJWKSFORMAT = new ConfigKey(
-            "oidc.jwksStd", String.class);
+    public static final ConfigKey<String> OIDCJWKSFORMAT = new ConfigKey<>(
+            "oidc.jwksStd",
+            Collections.singletonList(KeyType.GLOBAL));
 
-    public static final ConfigKey USERSDEFAULTDEVICELIMIT = new ConfigKey(
-            "users.defaultDeviceLimit", Integer.class);
+    public static final ConfigKey<Integer> USERSDEFAULTDEVICELIMIT = new ConfigKey<>(
+            "users.defaultDeviceLimit",
+            Collections.singletonList(KeyType.GLOBAL));
 
-    public static final ConfigKey USERSDEFAULTEXPIRATIONDAYS = new ConfigKey(
-            "users.defaultExpirationDays", Integer.class);
+    public static final ConfigKey<Integer> USERSDEFAULTEXPIRATIONDAYS = new ConfigKey<>(
+            "users.defaultExpirationDays",
+            Collections.singletonList(KeyType.GLOBAL));
 
     /**
      * Disable systemd health checks.
