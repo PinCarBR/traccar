@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 - 2019 Anton Tananaev (anton@traccar.org)
+ * Copyright 2015 - 2020 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.traccar.database.MaintenancesManager;
 import org.traccar.database.MediaManager;
 import org.traccar.database.NotificationManager;
 import org.traccar.database.PermissionsManager;
-import org.traccar.schedule.ScheduleManager;
 import org.traccar.database.UsersManager;
 import org.traccar.geocoder.Geocoder;
 import org.traccar.helper.Log;
@@ -59,11 +58,11 @@ import org.traccar.model.Maintenance;
 import org.traccar.model.Notification;
 import org.traccar.model.User;
 import org.traccar.notification.EventForwarder;
-import org.traccar.notification.JsonTypeEventForwarder;
 import org.traccar.notification.NotificatorManager;
 import org.traccar.reports.model.TripsConfig;
+import org.traccar.schedule.ScheduleManager;
+import org.traccar.sms.HttpSmsClient;
 import org.traccar.sms.SmsManager;
-import org.traccar.sms.smpp.SmppClient;
 import org.traccar.web.WebServer;
 
 import javax.ws.rs.client.Client;
@@ -74,8 +73,6 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 
 public final class Context {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Context.class);
 
     private Context() {
     }
@@ -260,13 +257,13 @@ public final class Context {
 
     public static TripsConfig initTripsConfig() {
         return new TripsConfig(
-                config.getLong("report.trip.minimalTripDistance", 500),
-                config.getLong("report.trip.minimalTripDuration", 300) * 1000,
-                config.getLong("report.trip.minimalParkingDuration", 300) * 1000,
-                config.getLong("report.trip.minimalNoDataDuration", 3600) * 1000,
-                config.getBoolean("report.trip.useIgnition"),
-                config.getBoolean("event.motion.processInvalidPositions"),
-                config.getDouble("event.motion.speedThreshold", 0.01));
+                config.getLong(Keys.REPORT_TRIP_MINIMAL_TRIP_DISTANCE),
+                config.getLong(Keys.REPORT_TRIP_MINIMAL_TRIP_DURATION) * 1000,
+                config.getLong(Keys.REPORT_TRIP_MINIMAL_PARKING_DURATION) * 1000,
+                config.getLong(Keys.REPORT_TRIP_MINIMAL_NO_DATA_DURATION) * 1000,
+                config.getBoolean(Keys.REPORT_TRIP_USE_IGNITION),
+                config.getBoolean(Keys.EVENT_MOTION_PROCESS_INVALID_POSITIONS),
+                config.getDouble(Keys.EVENT_MOTION_SPEED_THRESHOLD));
     }
 
     private static class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
@@ -282,14 +279,11 @@ public final class Context {
 
         try {
             config = new Config(configFile);
+            Log.setupLogger(config);
         } catch (Exception e) {
             config = new Config();
             Log.setupDefaultLogger();
             throw e;
-        }
-
-        if (config.getBoolean("logger.enable")) {
-            Log.setupLogger(config);
         }
 
         objectMapper = new ObjectMapper();
@@ -297,17 +291,14 @@ public final class Context {
         objectMapper.registerModule(new JSR353Module());
         objectMapper.setConfig(
                 objectMapper.getSerializationConfig().without(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
-        if (Context.getConfig().getBoolean("mapper.prettyPrintedJson")) {
-            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        }
 
         client = ClientBuilder.newClient().register(new ObjectMapperContextResolver());
 
-        if (config.hasKey("database.url")) {
+        if (config.hasKey(Keys.DATABASE_URL)) {
             dataManager = new DataManager(config);
         }
 
-        if (config.getBoolean("ldap.enable")) {
+        if (config.hasKey(Keys.LDAP_URL)) {
             ldapProvider = new LdapProvider(config);
         }
 
@@ -317,7 +308,7 @@ public final class Context {
 
         mailManager = new MailManager();
 
-        mediaManager = new MediaManager(config.getString("media.path"));
+        mediaManager = new MediaManager(config.getString(Keys.MEDIA_PATH));
 
         if (dataManager != null) {
             usersManager = new UsersManager(dataManager);
@@ -327,7 +318,7 @@ public final class Context {
 
         identityManager = deviceManager;
 
-        if (config.getBoolean("web.enable")) {
+        if (config.hasKey(Keys.WEB_PORT)) {
             webServer = new WebServer(config);
         }
 
@@ -337,31 +328,24 @@ public final class Context {
 
         tripsConfig = initTripsConfig();
 
-        if (config.getBoolean("sms.enable")) {
-            final String smsManagerClass = config.getString("sms.manager.class", SmppClient.class.getCanonicalName());
-            try {
-                smsManager = (SmsManager) Class.forName(smsManagerClass).newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                LOGGER.warn("Error loading SMS Manager class : " + smsManagerClass, e);
-            }
+        if (config.hasKey(Keys.SMS_HTTP_URL)) {
+            smsManager = new HttpSmsClient();
         }
 
-        if (config.getBoolean("event.enable")) {
-            initEventsModule();
-        }
+        initEventsModule();
 
         serverManager = new ServerManager();
         scheduleManager = new ScheduleManager();
 
-        if (config.getBoolean("event.forward.enable")) {
-            eventForwarder = new JsonTypeEventForwarder();
+        if (config.hasKey(Keys.EVENT_FORWARD_URL)) {
+            eventForwarder = new EventForwarder();
         }
 
         attributesManager = new AttributesManager(dataManager);
 
         driversManager = new DriversManager(dataManager);
 
-        commandsManager = new CommandsManager(dataManager, config.getBoolean("commands.queueing"));
+        commandsManager = new CommandsManager(dataManager, config.getBoolean(Keys.COMMANDS_QUEUEING));
 
     }
 
@@ -380,12 +364,12 @@ public final class Context {
 
         String address;
         try {
-            address = config.getString("web.address", InetAddress.getLocalHost().getHostAddress());
+            address = config.getString(Keys.WEB_ADDRESS, InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
             address = "localhost";
         }
 
-        String webUrl = URIUtil.newURI("http", address, config.getInteger("web.port", 8082), "", "");
+        String webUrl = URIUtil.newURI("http", address, config.getInteger(Keys.WEB_PORT), "", "");
         webUrl = Context.getConfig().getString("web.url", webUrl);
         velocityProperties.setProperty("web.url", webUrl);
 

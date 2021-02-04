@@ -115,6 +115,9 @@ public class HuabaoProtocolDecoder extends BaseProtocolDecoder {
         if (BitUtil.check(value, 8)) {
             return Position.ALARM_POWER_OFF;
         }
+        if (BitUtil.check(value, 17)) {
+            return Position.ALARM_TAMPERING;
+        }
         if (BitUtil.check(value, 20)) {
             return Position.ALARM_GEOFENCE;
         }
@@ -317,6 +320,7 @@ public class HuabaoProtocolDecoder extends BaseProtocolDecoder {
                     position.set(Position.KEY_POWER, buf.readUnsignedShort() * 0.1);
                     break;
                 case 0xD4:
+                case 0xFE:
                     position.set(Position.KEY_BATTERY_LEVEL, buf.readUnsignedByte());
                     break;
                 case 0xD5:
