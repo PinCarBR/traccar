@@ -74,10 +74,15 @@ public class SecurityRequestFilter implements ContainerRequestFilter {
 
             String authHeader = requestContext.getHeaderString(AUTHORIZATION_HEADER);
             if (authHeader != null) {
-
                 try {
-                    String[] auth = decodeBasicAuth(authHeader);
-                    User user = Context.getPermissionsManager().login(auth[0], auth[1]);
+                    User user;
+                    if (authHeader.matches("^[B|b]earer.*$")) {
+                        String token = authHeader.replaceFirst("[B|b]earer ", "");
+                        user = Context.getPermissionsManager().login(token);
+                    } else {
+                        String[] auth = decodeBasicAuth(authHeader);
+                        user = Context.getPermissionsManager().login(auth[0], auth[1]);
+                    }
                     if (user != null) {
                         Main.getInjector().getInstance(StatisticsManager.class).registerRequest(user.getId());
                         securityContext = new UserSecurityContext(new UserPrincipal(user.getId()));
