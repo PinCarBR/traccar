@@ -338,9 +338,9 @@ public class DataManager {
     public User login(String token) throws SQLException {
         OidcProvider oidcProvider = Context.getOidcProvider();
         if (oidcProvider != null) {
-            Claims claims = oidcProvider.validateToken(token);
-            String email = claims.get("email", String.class);
-            if (email != null) {
+            try {
+                Claims claims = oidcProvider.validateToken(token);
+                String email = claims.get("email", String.class);
                 User user = QueryBuilder.create(dataSource, getQuery("database.loginUser"))
                         .setString("email", email.trim())
                         .executeQuerySingle(User.class);
@@ -353,7 +353,7 @@ public class DataManager {
                     Context.getUsersManager().addItem(user);
                     return user;
                 }
-            } else {
+            } catch (NullPointerException e) {
                 return null;
             }
         }
