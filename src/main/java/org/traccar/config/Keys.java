@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 - 2020 Anton Tananaev (anton@traccar.org)
+ * Copyright 2019 - 2021 Anton Tananaev (anton@traccar.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,13 @@ public final class Keys {
      */
     public static final ConfigSuffix<String> PROTOCOL_ALARM_MAP = new ConfigSuffix<>(
             ".alarmMap",
+            Collections.singletonList(KeyType.GLOBAL));
+
+    /**
+     * Indicates whether TAIP protocol should have prefixes for messages.
+     */
+    public static final ConfigSuffix<Boolean> PROTOCOL_PREFIX = new ConfigSuffix<>(
+            ".prefix",
             Collections.singletonList(KeyType.GLOBAL));
 
     /**
@@ -685,6 +692,28 @@ public final class Keys {
      */
     public static final ConfigKey<String> SMS_HTTP_TEMPLATE = new ConfigKey<>(
             "sms.http.template",
+            Collections.singletonList(KeyType.GLOBAL));
+
+    /**
+     * AWS Access Key with SNS permission.
+     */
+    public static final ConfigKey<String> SMS_AWS_ACCESS = new ConfigKey<>(
+            "sms.aws.access",
+            Collections.singletonList(KeyType.GLOBAL));
+
+    /**
+     * AWS Secret Access Key with SNS permission.
+     */
+    public static final ConfigKey<String> SMS_AWS_SECRET = new ConfigKey<>(
+            "sms.aws.secret",
+            Collections.singletonList(KeyType.GLOBAL));
+
+    /**
+     * AWS Region for SNS service.
+     * Make sure to use regions that are supported for messaging.
+     */
+    public static final ConfigKey<String> SMS_AWS_REGION = new ConfigKey<>(
+            "sms.aws.region",
             Collections.singletonList(KeyType.GLOBAL));
 
     /**

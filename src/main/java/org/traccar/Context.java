@@ -61,6 +61,7 @@ import org.traccar.reports.model.TripsConfig;
 import org.traccar.schedule.ScheduleManager;
 import org.traccar.sms.HttpSmsClient;
 import org.traccar.sms.SmsManager;
+import org.traccar.sms.SnsSmsClient;
 import org.traccar.web.WebServer;
 
 import javax.ws.rs.client.Client;
@@ -328,6 +329,8 @@ public final class Context {
 
         if (config.hasKey(Keys.SMS_HTTP_URL)) {
             smsManager = new HttpSmsClient();
+        } else if (config.hasKey(Keys.SMS_AWS_REGION)) {
+            smsManager = new SnsSmsClient();
         }
 
         initEventsModule();
