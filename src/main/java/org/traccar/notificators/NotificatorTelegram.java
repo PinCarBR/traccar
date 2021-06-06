@@ -82,9 +82,14 @@ public class NotificatorTelegram extends Notificator {
         });
     }
 
-    private LocationMessage createLocationMessage(Position position) {
+    private LocationMessage createLocationMessage(long userId, Position position) {
+        final User user = Context.getPermissionsManager().getUser(userId);
         LocationMessage locationMessage = new LocationMessage();
-        locationMessage.chatId = chatId;
+        if (user.getAttributes().containsKey("notificationTelegramChatId")) {
+            locationMessage.chatId = user.getString("notificationTelegramChatId");
+        } else {
+            locationMessage.chatId = chatId;
+        }
         locationMessage.latitude = position.getLatitude();
         locationMessage.longitude = position.getLongitude();
         locationMessage.bearing = (int) Math.ceil(position.getCourse());
@@ -95,7 +100,7 @@ public class NotificatorTelegram extends Notificator {
     @Override
     public void sendSync(long userId, Event event, Position position) {
         if (position != null) {
-            executeRequest(urlSendLocation, createLocationMessage(position));
+            executeRequest(urlSendLocation, createLocationMessage(userId, position));
         }
         final User user = Context.getPermissionsManager().getUser(userId);
         TextMessage message = new TextMessage();
@@ -104,7 +109,7 @@ public class NotificatorTelegram extends Notificator {
         } else {
             message.chatId = chatId;
         }
-        message.text = NotificationFormatter.formatFullMessage(userId, event, position).getBody();
+        message.text = NotificationFormatter.formatShortMessage(userId, event, position);
         executeRequest(urlSendText, message);
     }
 
