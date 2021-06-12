@@ -1,5 +1,6 @@
 /*
- * Copyright 2019 - 2020 Anton Tananaev (anton@traccar.org)
+ * Copyright 2019 - 2021 Anton Tananaev (anton@traccar.org)
+ * Copyright 2021 Rafael Miquelino (rafaelmiquelino@gmail.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,14 +83,9 @@ public class NotificatorTelegram extends Notificator {
         });
     }
 
-    private LocationMessage createLocationMessage(long userId, Position position) {
-        final User user = Context.getPermissionsManager().getUser(userId);
+    private LocationMessage createLocationMessage(String messageChatId, Position position) {
         LocationMessage locationMessage = new LocationMessage();
-        if (user.getAttributes().containsKey("notificationTelegramChatId")) {
-            locationMessage.chatId = user.getString("notificationTelegramChatId");
-        } else {
-            locationMessage.chatId = chatId;
-        }
+        locationMessage.chatId = messageChatId;
         locationMessage.latitude = position.getLatitude();
         locationMessage.longitude = position.getLongitude();
         locationMessage.bearing = (int) Math.ceil(position.getCourse());
@@ -99,18 +95,17 @@ public class NotificatorTelegram extends Notificator {
 
     @Override
     public void sendSync(long userId, Event event, Position position) {
-        if (position != null) {
-            executeRequest(urlSendLocation, createLocationMessage(userId, position));
-        }
-        final User user = Context.getPermissionsManager().getUser(userId);
+        User user = Context.getPermissionsManager().getUser(userId);
         TextMessage message = new TextMessage();
-        if (user.getAttributes().containsKey("notificationTelegramChatId")) {
-            message.chatId = user.getString("notificationTelegramChatId");
-        } else {
+        message.chatId = user.getString("telegramChatId");
+        if (message.chatId == null) {
             message.chatId = chatId;
         }
         message.text = NotificationFormatter.formatShortMessage(userId, event, position);
         executeRequest(urlSendText, message);
+        if (position != null) {
+            executeRequest(urlSendLocation, createLocationMessage(message.chatId, position));
+        }
     }
 
     @Override
